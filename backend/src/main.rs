@@ -1,4 +1,4 @@
-use std::net::SocketAddr;
+use std::{env, net::SocketAddr};
 
 use tracing_subscriber::{EnvFilter, fmt};
 
@@ -15,7 +15,11 @@ async fn main() {
     let state = state::AppState::new();
     let app = router::create_router(state);
 
-    let addr: SocketAddr = "0.0.0.0:3001".parse().expect("invalid bind addr");
+    let port = env::var("PORT")
+        .ok()
+        .and_then(|value| value.parse::<u16>().ok())
+        .unwrap_or(3001);
+    let addr: SocketAddr = format!("0.0.0.0:{port}").parse().expect("invalid bind addr");
     tracing::info!(%addr, "geoblocking poc backend listening");
 
     let listener = tokio::net::TcpListener::bind(addr)
