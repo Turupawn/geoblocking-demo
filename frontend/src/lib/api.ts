@@ -4,8 +4,15 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
 async function parseJsonOrThrow<T>(res: Response): Promise<T> {
   if (!res.ok) {
-    const fallback = await res.text().catch(() => "");
-    throw new Error(`Request failed: ${res.status} ${fallback}`.trim());
+    const text = await res.text().catch(() => "");
+    let message = `Request failed: ${res.status}`;
+    try {
+      const json = JSON.parse(text);
+      if (json.message) message = json.message;
+    } catch {
+      if (text) message = text;
+    }
+    throw new Error(message);
   }
   return res.json();
 }

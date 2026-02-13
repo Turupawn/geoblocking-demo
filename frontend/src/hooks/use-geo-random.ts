@@ -7,6 +7,6 @@ export function useGeoRandom() {
   return useQuery({
     queryKey: ["geo-random"],
     queryFn: getRandom,
-    refetchInterval: 300,
+    refetchInterval: 50,
   });
 }
